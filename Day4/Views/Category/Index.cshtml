@@ -1,0 +1,150 @@
+﻿@model IEnumerable<Day4.Models.Category>
+
+@{
+    ViewData["Title"] = "Danh sach danh muc";
+
+    string search = ViewBag.Search ?? "";
+    string sort = ViewBag.Sort ?? "";
+    int currentPage = ViewBag.CurrentPage ?? 1;
+    int totalPages = ViewBag.TotalPages ?? 0;
+}
+
+<h2>Danh sách danh mục</h2>
+
+<a asp-controller="Category"
+   asp-action="Create"
+   class="btn btn-primary mb-3">
+    Thêm danh mục
+</a>
+
+<!-- TIM KIEM VA SAP XEP -->
+<form asp-controller="Category"
+      asp-action="Index"
+      method="get"
+      class="row g-2 mb-3">
+
+    <div class="col-md-5">
+        <input type="text"
+               name="search"
+               value="@search"
+               class="form-control"
+               placeholder="Nhập tên danh mục cần tìm..." />
+    </div>
+
+    <div class="col-md-4">
+        <select name="sort" class="form-select">
+            <option value="">Tên A-Z</option>
+
+            <option value="name_desc"
+                    selected="@(sort == "name_desc")">
+                Tên Z-A
+            </option>
+
+            <option value="id_asc"
+                    selected="@(sort == "id_asc")">
+                ID tăng dần
+            </option>
+
+            <option value="id_desc"
+                    selected="@(sort == "id_desc")">
+                ID giảm dần
+            </option>
+        </select>
+    </div>
+
+    <div class="col-md-3">
+        <button type="submit"
+                class="btn btn-success">
+            Tìm kiếm / Sắp xếp
+        </button>
+
+        <a asp-action="Index"
+           class="btn btn-secondary">
+            Xóa lọc
+        </a>
+    </div>
+</form>
+
+<!-- BANG CATEGORY -->
+<table class="table table-bordered table-striped">
+    <thead class="table-dark">
+        <tr>
+            <th>ID</th>
+            <th>Tên danh mục</th>
+            <th>Chức năng</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.Id</td>
+                <td>@item.Name</td>
+                <td>
+                    <a asp-action="Edit"
+                       asp-route-id="@item.Id"
+                       class="btn btn-warning btn-sm">
+                        Sửa
+                    </a>
+
+                    <a asp-action="Delete"
+                       asp-route-id="@item.Id"
+                       class="btn btn-danger btn-sm">
+                        Xóa
+                    </a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@if (!Model.Any())
+{
+    <div class="alert alert-warning">
+        Không tìm thấy danh mục nào!
+    </div>
+}
+
+<!-- PHAN TRANG -->
+@if (totalPages > 1)
+{
+    <nav>
+        <ul class="pagination justify-content-center">
+
+            <li class="page-item @(currentPage == 1 ? "disabled" : "")">
+                <a class="page-link"
+                   asp-action="Index"
+                   asp-route-page="@(currentPage - 1)"
+                   asp-route-search="@search"
+                   asp-route-sort="@sort">
+                    Trước
+                </a>
+            </li>
+
+            @for (int i = 1; i <= totalPages; i++)
+            {
+                <li class="page-item @(i == currentPage ? "active" : "")">
+                    <a class="page-link"
+                       asp-action="Index"
+                       asp-route-page="@i"
+                       asp-route-search="@search"
+                       asp-route-sort="@sort">
+                        @i
+                    </a>
+                </li>
+            }
+
+            <li class="page-item @(currentPage == totalPages ? "disabled" : "")">
+                <a class="page-link"
+                   asp-action="Index"
+                   asp-route-page="@(currentPage + 1)"
+                   asp-route-search="@search"
+                   asp-route-sort="@sort">
+                    Sau
+                </a>
+            </li>
+
+        </ul>
+    </nav>
+}
